@@ -11,10 +11,44 @@
   nsResize::Add $R1 ${X} ${Y} ${W} ${H}
 !macroend
 
+!macro _nsResize_Header AddWidth AddHeight
+
+  !ifdef MUI_HEADERIMAGE
+    nsResize::Add $mui.Header.Image 0 0 -16u -5u
+    !ifndef MUI_HEADERIMAGE_RIGHT
+      ${If} $(^RTL) == 1
+        nsResize::Add $mui.Header.Text 0 0 -${AddWidth} 0
+        nsResize::Add $mui.Header.SubText 0 0 -${AddWidth} 0
+      ${Else}
+        nsResize::Add $mui.Header.Text ${AddWidth} 0 -${AddWidth} 0
+        nsResize::Add $mui.Header.SubText ${AddWidth} 0 -${AddWidth} 0
+      ${EndIf}
+    !else
+      ${If} $(^RTL) == 1
+        nsResize::Add $mui.Header.Text ${AddWidth} 0 -${AddWidth} 0
+        nsResize::Add $mui.Header.SubText ${AddWidth} 0 -${AddWidth} 0
+      ${Else}
+        nsResize::Add $mui.Header.Text 0 0 -${AddWidth} 0
+        nsResize::Add $mui.Header.SubText 0 0 -${AddWidth} 0
+      ${EndIf}
+    !endif
+  !endif
+
+!macroend
+!define nsResize_Header `!insertmacro _nsResize_Header`
+
 !macro _nsResize_Window AddWidth AddHeight
 
+  !insertmacro _nsResize_Header ${AddWidth} ${AddHeight}
   Push $R0
-  nsResize::Add $HWNDPARENT 0 0 ${AddWidth} ${AddHeight}
+  !ifndef __nsResize_HalfSizeVars_Declared
+    !define __nsResize_HalfSizeVars_Declared
+    Var /GLOBAL _nsResize_HalfWidth
+    Var /GLOBAL _nsResize_HalfHeight
+  !endif
+  IntOp $_nsResize_HalfWidth ${AddWidth} / 2
+  IntOp $_nsResize_HalfHeight ${AddHeight} / 2
+  nsResize::Add $HWNDPARENT -$_nsResize_HalfWidth -$_nsResize_HalfHeight ${AddWidth} ${AddHeight}
   ${If} $(^RTL) == 1
     !insertmacro __nsResize_AddParent 3 0 ${AddHeight} 0 0
     !insertmacro __nsResize_AddParent 1 0 ${AddHeight} 0 0
@@ -28,13 +62,13 @@
   !insertmacro __nsResize_AddParent 1018 0 0 ${AddWidth} ${AddHeight}
   !insertmacro __nsResize_AddParent 1044 0 0 ${AddWidth} ${AddHeight}
   !insertmacro __nsResize_AddParent 1035 0 ${AddHeight} ${AddWidth} 0
-  !insertmacro __nsResize_AddParent 1036 0 0 ${AddWidth} 0
+  !insertmacro __nsResize_AddParent 1036 0 -5u ${AddWidth} 0
   !insertmacro __nsResize_AddParent 1045 0 ${AddHeight} ${AddWidth} 0
   !insertmacro __nsResize_AddParent 1256 0 ${AddHeight} ${AddWidth} 0
   !insertmacro __nsResize_AddParent 1028 0 ${AddHeight} ${AddWidth} 0
-  !insertmacro __nsResize_AddParent 1034 0 0 ${AddWidth} 0
-  !insertmacro __nsResize_AddParent 1037 0 0 ${AddWidth} 0
-  !insertmacro __nsResize_AddParent 1038 0 0 ${AddWidth} 0
+  !insertmacro __nsResize_AddParent 1034 0 0 ${AddWidth} -5u
+  !insertmacro __nsResize_AddParent 1037 0 -3u ${AddWidth} 0
+  !insertmacro __nsResize_AddParent 1038 0 -5u ${AddWidth} 0
   Pop $R0
 
 !macroend
@@ -42,13 +76,14 @@
 
 !macro _nsResize_WelcomePage AddWidth AddHeight
 
-  nsResize::Add $mui.WelcomePage.Image 0 0 0 ${AddHeight}
   ${If} $(^RTL) == 1
-    nsResize::Add $mui.WelcomePage.Title -${AddWidth} 0 ${AddWidth} 0
-    nsResize::Add $mui.WelcomePage.Text -${AddWidth} 0 ${AddWidth} ${AddHeight}
+    nsResize::Add $mui.WelcomePage.Image 17u 0 -17u ${AddHeight}
+    nsResize::Add $mui.WelcomePage.Title -${AddWidth} 0 0 0
+    nsResize::Add $mui.WelcomePage.Text -${AddWidth} 0 0 ${AddHeight}
   ${Else}
-    nsResize::Add $mui.WelcomePage.Title 0 0 ${AddWidth} 0
-    nsResize::Add $mui.WelcomePage.Text 0 0 ${AddWidth} ${AddHeight}
+    nsResize::Add $mui.WelcomePage.Image 0 0 -17u ${AddHeight}
+    nsResize::Add $mui.WelcomePage.Title ${AddWidth} 0 0 0
+    nsResize::Add $mui.WelcomePage.Text ${AddWidth} 0 0 ${AddHeight}
   ${EndIf}
 
 !macroend
@@ -142,13 +177,14 @@
 
 !macro _nsResize_FinishPage AddWidth AddHeight
 
-  nsResize::Add $mui.FinishPage.Image 0 0 0 ${AddHeight}
   ${If} $(^RTL) == 1
-    nsResize::Add $mui.FinishPage.Title -${AddWidth} 0 ${AddWidth} 0
-    nsResize::Add $mui.FinishPage.Text -${AddWidth} 0 ${AddWidth} ${AddHeight}
+    nsResize::Add $mui.FinishPage.Image 17u 0 -17u ${AddHeight}
+    nsResize::Add $mui.FinishPage.Title -${AddWidth} 0 0 0
+    nsResize::Add $mui.FinishPage.Text -${AddWidth} 0 0 ${AddHeight}
   ${Else}
-    nsResize::Add $mui.FinishPage.Title 0 0 ${AddWidth} 0
-    nsResize::Add $mui.FinishPage.Text 0 0 ${AddWidth} ${AddHeight}
+    nsResize::Add $mui.FinishPage.Image 0 0 -17u ${AddHeight}
+    nsResize::Add $mui.FinishPage.Title ${AddWidth} 0 0 0
+    nsResize::Add $mui.FinishPage.Text ${AddWidth} 0 0 ${AddHeight}
   ${EndIf}
   !ifdef MUI_FINISHPAGE_RUN_VARIABLES
     nsResize::Add $mui.FinishPage.Run 0 ${AddHeight} 0 0

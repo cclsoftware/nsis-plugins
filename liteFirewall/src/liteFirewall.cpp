@@ -47,6 +47,22 @@ HINSTANCE g_hInstance;
 
 HRESULT     WFCOMInitialize(INetFwPolicy2** ppNetFwPolicy2);
 
+BSTR CreateBString (LPCTSTR inStr)
+{
+	#if (defined (_UNICODE) || defined (UNICODE))
+		return SysAllocString (inStr);
+	#else
+		int length = strlen (inStr);
+		wchar_t* tempStr = new wchar_t[length + 1];
+		for (int i = 0; i < length; i++)
+			tempStr[i] = inStr[i];
+		tempStr[length] = 0;
+		BSTR outStr = SysAllocString (tempStr);
+		delete [] tempStr;
+		return outStr;
+	#endif
+}
+
 HRESULT AddRule(LPCTSTR ExceptionName, LPCTSTR ProcessPath)
 {
 	HRESULT result = CoInitialize(NULL);
@@ -63,9 +79,9 @@ HRESULT AddRule(LPCTSTR ExceptionName, LPCTSTR ProcessPath)
 
 	long CurrentProfilesBitMask = 0;
 
-	BSTR bstrRuleName = SysAllocString(ExceptionName);
-	BSTR bstrApplicationName = SysAllocString(ProcessPath);
-	BSTR bstrRuleInterfaceType = SysAllocString(L"All");
+	BSTR bstrRuleName = CreateBString(ExceptionName);
+	BSTR bstrApplicationName = CreateBString(ProcessPath);
+	BSTR bstrRuleInterfaceType = SysAllocString (L"All");
 
 	// Initialize COM.
 	hrComInit = CoInitializeEx(
@@ -108,7 +124,7 @@ HRESULT AddRule(LPCTSTR ExceptionName, LPCTSTR ProcessPath)
 		}
 		catch (_com_error& e)
 		{
-			printf("%s", e.Error());
+			printf("%d", (int) e.Error());
 		}
 		goto Cleanup;
 	}
@@ -121,21 +137,7 @@ HRESULT AddRule(LPCTSTR ExceptionName, LPCTSTR ProcessPath)
 		goto Cleanup;
 	}
 
-	// Retrieve Current Profiles bitmask
-	hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask);
-	if (FAILED(hr))
-	{
-		printf("get_CurrentProfileTypes failed: 0x%08lx\n", hr);
-		goto Cleanup;
-	}
-
-	// When possible we avoid adding firewall rules to the Public profile.
-	// If Public is currently active and it is not the only active profile, we remove it from the bitmask
-	if ((CurrentProfilesBitMask & NET_FW_PROFILE2_PUBLIC) &&
-		(CurrentProfilesBitMask != NET_FW_PROFILE2_PUBLIC))
-	{
-		CurrentProfilesBitMask ^= NET_FW_PROFILE2_PUBLIC;
-	}
+	CurrentProfilesBitMask = NET_FW_PROFILE2_ALL;
 
 	// Create a new Firewall Rule object.
 	hr = CoCreateInstance(
@@ -222,7 +224,7 @@ HRESULT RemoveRule(LPCTSTR ExceptionName, LPCTSTR ProcessPath)
 
 	long CurrentProfilesBitMask = 0;
 
-	BSTR bstrRuleName = SysAllocString(ExceptionName);
+	BSTR bstrRuleName = CreateBString (ExceptionName);
 
 	// Retrieve INetFwPolicy2
 	hr = WFCOMInitialize(&pNetFwPolicy2);
@@ -281,6 +283,7 @@ Cleanup:
 	}
 
 	CoUninitialize();
+
 	return 0;
 }
 

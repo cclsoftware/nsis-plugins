@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{4977186E-7BE7-4DC5-809E-596BF31A2C8C}") = "nsResize", "nsResize.vcxproj", "{C5988C24-9154-4DE8-92E3-DF89FBFA72EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release Unicode|Win32 = Release Unicode|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C5988C24-9154-4DE8-92E3-DF89FBFA72EC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C5988C24-9154-4DE8-92E3-DF89FBFA72EC}.Debug|Win32.Build.0 = Debug|Win32
+		{C5988C24-9154-4DE8-92E3-DF89FBFA72EC}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
+		{C5988C24-9154-4DE8-92E3-DF89FBFA72EC}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
+		{C5988C24-9154-4DE8-92E3-DF89FBFA72EC}.Release|Win32.ActiveCfg = Release|Win32
+		{C5988C24-9154-4DE8-92E3-DF89FBFA72EC}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
